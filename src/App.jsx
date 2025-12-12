@@ -53,10 +53,10 @@ function App() {
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState(null);
   
-  // --- VIEW STATE (New) ---
-  const [showArchived, setShowArchived] = useState(false); // Toggle active/canceled
-  const [sortBy, setSortBy] = useState('price'); // 'price', 'name', 'day'
-  const [sortOrder, setSortOrder] = useState('desc'); // 'asc', 'desc'
+  // --- VIEW STATE ---
+  const [showArchived, setShowArchived] = useState(false); 
+  const [sortBy, setSortBy] = useState('price'); 
+  const [sortOrder, setSortOrder] = useState('desc');
 
   // --- CHAT STATE ---
   const [chatInput, setChatInput] = useState("");
@@ -73,7 +73,7 @@ function App() {
   const [formPrice, setFormPrice] = useState('');
   const [formFrequency, setFormFrequency] = useState('Monthly'); 
   const [formLogo, setFormLogo] = useState(''); 
-  const [formStatus, setFormStatus] = useState('Active'); // New Field
+  const [formStatus, setFormStatus] = useState('Active'); 
   const [suggestions, setSuggestions] = useState([]); 
 
   // --- 1. LISTEN FOR LOGIN & NOTIFICATIONS ---
@@ -99,7 +99,6 @@ function App() {
         const q = query(collection(db, "subscriptions"), where("uid", "==", user.uid));
         const querySnapshot = await getDocs(q);
         const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        // Default sort by day
         data.sort((a, b) => a.day - b.day);
         setSubscriptions(data);
         checkDueSoon(data);
@@ -127,13 +126,11 @@ function App() {
     return `${diff} days left`;
   };
 
-  // True currency conversion
   const convertPrice = (priceUSD) => {
     const rate = CURRENCIES[currency].rate;
     return (parseFloat(priceUSD || 0) * rate).toFixed(2);
   };
 
-  // Convert everything to a monthly standard for stats
   const calculateMonthlyCostUSD = (sub) => {
     if (sub.status === 'Canceled') return 0;
     const price = parseFloat(sub.price || 0);
@@ -197,7 +194,7 @@ function App() {
 
     const subData = {
       name: formName, 
-      price: parseFloat(formPrice).toFixed(2), // Always store as USD base in DB for simplicity, or assume user enters in their currency. Here we assume input = USD for simplicity of logic or just raw value. *Correction*: ideally you store currency with price. For this demo, we assume user inputs in USD or we treat the number as base.*
+      price: parseFloat(formPrice).toFixed(2), 
       day: parseInt(e.target.day.value),
       category: formCategory, 
       frequency: formFrequency,
@@ -271,12 +268,10 @@ function App() {
   // --- DERIVED DATA ---
   const processedSubscriptions = useMemo(() => {
     let filtered = subscriptions;
-    // Filter Active/Archived
     if (!showArchived) {
       filtered = filtered.filter(s => s.status !== 'Canceled');
     }
     
-    // Sort
     return [...filtered].sort((a, b) => {
       let valA = a[sortBy];
       let valB = b[sortBy];
@@ -297,7 +292,6 @@ function App() {
 
   const subsByDay = useMemo(() => {
     const lookup = {};
-    // Only show active on calendar
     subscriptions.filter(s => s.status !== 'Canceled').forEach(sub => { 
       if (!lookup[sub.day]) lookup[sub.day] = []; 
       lookup[sub.day].push(sub); 
@@ -320,7 +314,6 @@ function App() {
       catMap[sub.category].value += monthlyCost;
     });
     
-    // Convert USD totals to Selected Currency for display
     const pieData = Object.values(catMap).map(item => ({
       ...item,
       value: parseFloat((item.value * CURRENCIES[currency].rate).toFixed(2))
@@ -345,19 +338,19 @@ function App() {
   if (!user) {
     return (
       <div className="min-h-screen bg-black text-white font-sans flex items-center justify-center p-4">
-        <div className="w-full max-w-md bg-[#1C1C1E] rounded-[40px] p-10 border border-[#333] text-center shadow-2xl">
+        <div className="w-full max-w-md bg-[#1C1C1E] rounded-[40px] p-8 md:p-10 border border-[#333] text-center shadow-2xl">
           <div className="w-20 h-20 bg-[#2C2C2E] rounded-3xl flex items-center justify-center mx-auto mb-8 border border-[#444] shadow-lg">
              <Zap size={40} className="text-yellow-500" fill="currentColor"/>
           </div>
-          <h1 className="text-4xl font-extrabold mb-4 tracking-tight">SubDay</h1>
-          <button onClick={() => signInWithPopup(auth, googleProvider)} className="w-full bg-white text-black py-5 rounded-2xl font-bold text-lg hover:bg-gray-200 transition-all flex items-center justify-center gap-3">Sign in with Google</button>
+          <h1 className="text-3xl md:text-4xl font-extrabold mb-4 tracking-tight">SubDay</h1>
+          <button onClick={() => signInWithPopup(auth, googleProvider)} className="w-full bg-white text-black py-4 md:py-5 rounded-2xl font-bold text-lg hover:bg-gray-200 transition-all flex items-center justify-center gap-3">Sign in with Google</button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans p-6 flex justify-center overflow-hidden">
+    <div className="min-h-screen bg-black text-white font-sans p-4 md:p-6 flex justify-center overflow-x-hidden">
       <div className="w-full max-w-7xl flex flex-col gap-6">
         
         {/* TOP BAR */}
@@ -366,11 +359,11 @@ function App() {
              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">S</div>
              SubDay <span className="text-gray-500">Pro</span>
            </h1>
-           <div className="flex items-center gap-4">
+           <div className="flex items-center gap-2 md:gap-4 w-full md:w-auto justify-end">
               <select 
                 value={currency} 
                 onChange={(e) => setCurrency(e.target.value)} 
-                className="bg-[#1C1C1E] text-white px-4 py-2 rounded-xl outline-none text-sm font-bold border border-[#333]"
+                className="bg-[#1C1C1E] text-white px-3 py-2 rounded-xl outline-none text-sm font-bold border border-[#333]"
               >
                 {Object.keys(CURRENCIES).map(c => <option key={c} value={c}>{c} ({CURRENCIES[c].symbol})</option>)}
               </select>
@@ -383,13 +376,13 @@ function App() {
         {dataLoading ? (
             <div className="flex-1 flex items-center justify-center"><Loader2 className="animate-spin text-gray-600" size={40} /></div>
         ) : (
-        <div className="grid lg:grid-cols-12 gap-8 flex-1">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 flex-1">
           
           {/* LEFT PANEL */}
           <div className="lg:col-span-8 flex flex-col">
              {/* TABS */}
-             <div className="flex flex-wrap items-center gap-4 mb-6">
-                <div className="bg-[#1C1C1E] p-1 rounded-2xl flex overflow-x-auto">
+             <div className="flex flex-col md:flex-row md:items-center gap-4 mb-6">
+                <div className="bg-[#1C1C1E] p-1 rounded-2xl flex overflow-x-auto no-scrollbar w-full md:w-auto">
                   {[
                     {id: 'calendar', icon: CalIcon}, 
                     {id: 'list', icon: List},
@@ -399,15 +392,15 @@ function App() {
                     <button 
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id)}
-                      className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all capitalize whitespace-nowrap ${activeTab === tab.id ? 'bg-[#3A3A3C] text-white' : 'text-gray-500'}`}
+                      className={`flex-1 md:flex-none flex items-center justify-center gap-2 px-4 md:px-6 py-3 rounded-xl text-sm font-bold transition-all capitalize whitespace-nowrap ${activeTab === tab.id ? 'bg-[#3A3A3C] text-white' : 'text-gray-500'}`}
                     >
-                      <tab.icon size={18} /> {tab.id}
+                      <tab.icon size={18} /> <span className="hidden sm:inline">{tab.id}</span>
                     </button>
                   ))}
                 </div>
-                <div className="ml-auto text-right">
+                <div className="md:ml-auto flex justify-between md:block items-center border-t md:border-0 border-[#333] pt-4 md:pt-0">
                    <p className="text-xs text-gray-500 font-bold uppercase">Total Monthly</p>
-                   <p className="text-xl font-bold">{CURRENCIES[currency].symbol}{totalMonthlyConverted}</p>
+                   <p className="text-xl md:text-2xl font-bold">{CURRENCIES[currency].symbol}{totalMonthlyConverted}</p>
                 </div>
              </div>
 
@@ -438,22 +431,22 @@ function App() {
 
              {/* VIEW: LIST */}
              {activeTab === 'list' && (
-                <div className="bg-[#1C1C1E] rounded-[32px] p-6 border border-[#2C2C2E] h-[600px] flex flex-col">
+                <div className="bg-[#1C1C1E] rounded-[32px] p-4 md:p-6 border border-[#2C2C2E] h-[500px] md:h-[600px] flex flex-col">
                   {/* List Controls */}
-                  <div className="flex justify-between mb-4 border-b border-[#333] pb-4">
-                    <div className="flex gap-2">
-                      <button onClick={() => handleSort('name')} className={`flex items-center gap-1 text-xs font-bold px-3 py-1 rounded-lg ${sortBy==='name' ? 'bg-white text-black' : 'text-gray-500 hover:bg-[#333]'}`}>Name <ArrowUpDown size={12}/></button>
-                      <button onClick={() => handleSort('price')} className={`flex items-center gap-1 text-xs font-bold px-3 py-1 rounded-lg ${sortBy==='price' ? 'bg-white text-black' : 'text-gray-500 hover:bg-[#333]'}`}>Price <ArrowUpDown size={12}/></button>
-                      <button onClick={() => handleSort('day')} className={`flex items-center gap-1 text-xs font-bold px-3 py-1 rounded-lg ${sortBy==='day' ? 'bg-white text-black' : 'text-gray-500 hover:bg-[#333]'}`}>Day <ArrowUpDown size={12}/></button>
+                  <div className="flex flex-col md:flex-row justify-between mb-4 border-b border-[#333] pb-4 gap-4">
+                    <div className="flex gap-2 overflow-x-auto">
+                      <button onClick={() => handleSort('name')} className={`flex items-center gap-1 text-xs font-bold px-3 py-2 rounded-lg ${sortBy==='name' ? 'bg-white text-black' : 'text-gray-500 hover:bg-[#333]'}`}>Name <ArrowUpDown size={12}/></button>
+                      <button onClick={() => handleSort('price')} className={`flex items-center gap-1 text-xs font-bold px-3 py-2 rounded-lg ${sortBy==='price' ? 'bg-white text-black' : 'text-gray-500 hover:bg-[#333]'}`}>Price <ArrowUpDown size={12}/></button>
+                      <button onClick={() => handleSort('day')} className={`flex items-center gap-1 text-xs font-bold px-3 py-2 rounded-lg ${sortBy==='day' ? 'bg-white text-black' : 'text-gray-500 hover:bg-[#333]'}`}>Day <ArrowUpDown size={12}/></button>
                     </div>
-                    <button onClick={() => setShowArchived(!showArchived)} className={`flex items-center gap-1 text-xs font-bold px-3 py-1 rounded-lg ${showArchived ? 'bg-orange-500 text-white' : 'text-gray-500 hover:bg-[#333]'}`}>
+                    <button onClick={() => setShowArchived(!showArchived)} className={`flex items-center gap-1 text-xs font-bold px-3 py-2 rounded-lg whitespace-nowrap ${showArchived ? 'bg-orange-500 text-white' : 'text-gray-500 hover:bg-[#333]'}`}>
                       <Archive size={12} /> {showArchived ? 'Hide History' : 'Show History'}
                     </button>
                   </div>
 
                   <div className="overflow-y-auto custom-scrollbar flex-1">
-                    <table className="w-full text-left">
-                      <thead className="text-gray-500 text-xs uppercase sticky top-0 bg-[#1C1C1E]">
+                    <table className="w-full text-left min-w-[500px]">
+                      <thead className="text-gray-500 text-xs uppercase sticky top-0 bg-[#1C1C1E] z-10">
                         <tr>
                           <th className="pb-4 pl-2">Name</th>
                           <th className="pb-4">Cost</th>
@@ -466,7 +459,7 @@ function App() {
                         {processedSubscriptions.map(sub => (
                           <tr key={sub.id} className={`border-b border-[#2C2C2E] last:border-0 hover:bg-[#2C2C2E] transition-colors group ${sub.status === 'Canceled' ? 'opacity-50 grayscale' : ''}`}>
                             <td className="py-4 pl-2 font-bold flex items-center gap-3">
-                              <div className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center text-xs" style={{backgroundColor: sub.color}}>
+                              <div className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center text-xs flex-shrink-0" style={{backgroundColor: sub.color}}>
                                  {sub.logo ? <img src={sub.logo} className="w-full h-full object-cover" /> : sub.name[0]}
                               </div>
                               {sub.name}
@@ -479,8 +472,10 @@ function App() {
                               </span>
                             </td>
                             <td className="py-4 text-right">
-                              <button onClick={() => handleEdit(sub)} className="p-2 hover:text-blue-400"><Edit2 size={16}/></button>
-                              <button onClick={() => handleDelete(sub.id)} className="p-2 hover:text-red-500"><Trash2 size={16}/></button>
+                              <div className="flex justify-end gap-1">
+                                <button onClick={() => handleEdit(sub)} className="p-2 hover:text-blue-400"><Edit2 size={16}/></button>
+                                <button onClick={() => handleDelete(sub.id)} className="p-2 hover:text-red-500"><Trash2 size={16}/></button>
+                              </div>
                             </td>
                           </tr>
                         ))}
@@ -493,12 +488,12 @@ function App() {
              {/* VIEW: STATS */}
              {activeTab === 'stats' && (
                <div className="grid md:grid-cols-2 gap-6 h-full">
-                  <div className="bg-[#1C1C1E] rounded-[32px] p-8 border border-[#2C2C2E] flex flex-col">
+                  <div className="bg-[#1C1C1E] rounded-[32px] p-6 border border-[#2C2C2E] flex flex-col">
                     <h3 className="text-gray-400 font-bold uppercase text-xs tracking-wider mb-4">Category Split</h3>
                     <div className="h-[300px] w-full">
                       <ResponsiveContainer width="100%" height="100%">
                         <PieChart>
-                          <Pie data={chartData.pie} dataKey="value" nameKey="name" innerRadius={80} outerRadius={100} paddingAngle={5} stroke="none">
+                          <Pie data={chartData.pie} dataKey="value" nameKey="name" innerRadius={60} outerRadius={80} paddingAngle={5} stroke="none">
                             {chartData.pie.map((entry, index) => <Cell key={index} fill={entry.color} />)}
                           </Pie>
                           <Tooltip formatter={(value) => `${CURRENCIES[currency].symbol}${value}`} contentStyle={{ backgroundColor: '#000', border: 'none', borderRadius: '12px' }}/>
@@ -506,7 +501,7 @@ function App() {
                       </ResponsiveContainer>
                     </div>
                   </div>
-                  <div className="bg-[#1C1C1E] rounded-[32px] p-8 border border-[#2C2C2E] flex flex-col">
+                  <div className="bg-[#1C1C1E] rounded-[32px] p-6 border border-[#2C2C2E] flex flex-col">
                     <h3 className="text-gray-400 font-bold uppercase text-xs tracking-wider mb-4">Cost Forecast</h3>
                     <div className="h-[300px] w-full">
                       <ResponsiveContainer width="100%" height="100%">
@@ -524,11 +519,11 @@ function App() {
 
              {/* VIEW: CHAT */}
              {activeTab === 'chat' && (
-               <div className="bg-[#1C1C1E] rounded-[32px] p-6 h-[600px] flex flex-col border border-[#2C2C2E]">
+               <div className="bg-[#1C1C1E] rounded-[32px] p-6 h-[500px] md:h-[600px] flex flex-col border border-[#2C2C2E]">
                   <div className="flex-1 overflow-y-auto custom-scrollbar space-y-4 pr-2 mb-4">
                      {messages.map((msg, idx) => (
                        <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                          <div className={`max-w-[80%] p-4 rounded-2xl text-sm leading-relaxed ${msg.role === 'user' ? 'bg-[#0A84FF] text-white rounded-br-sm' : 'bg-[#2C2C2E] text-gray-200 rounded-bl-sm'}`}>
+                          <div className={`max-w-[85%] md:max-w-[80%] p-4 rounded-2xl text-sm leading-relaxed ${msg.role === 'user' ? 'bg-[#0A84FF] text-white rounded-br-sm' : 'bg-[#2C2C2E] text-gray-200 rounded-bl-sm'}`}>
                              {msg.role === 'ai' && <div className="flex items-center gap-2 mb-2 text-xs font-bold text-gray-400"><Zap size={12} fill="currentColor" className="text-yellow-500"/> SubDay AI</div>}
                              {msg.text}
                           </div>
@@ -538,25 +533,25 @@ function App() {
                      <div ref={messagesEndRef} />
                   </div>
                   <div className="flex gap-2 relative">
-                     <input value={chatInput} onChange={(e) => setChatInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()} placeholder="Ask AI..." className="flex-1 bg-black border border-[#333] rounded-2xl px-6 py-4 outline-none focus:border-[#0A84FF] text-white" />
+                     <input value={chatInput} onChange={(e) => setChatInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()} placeholder="Ask AI..." className="flex-1 bg-black border border-[#333] rounded-2xl px-4 md:px-6 py-4 outline-none focus:border-[#0A84FF] text-white" />
                      <button onClick={handleSendMessage} disabled={!chatInput.trim() || isTyping} className="bg-[#0A84FF] text-white p-4 rounded-2xl hover:bg-blue-600 disabled:opacity-50"><Send size={20} /></button>
                   </div>
                </div>
              )}
           </div>
 
-          {/* RIGHT SIDE DETAILS */}
-          <div className="lg:col-span-4 flex flex-col gap-4 lg:mt-[88px]">
-             <div className="bg-[#1C1C1E] rounded-3xl p-6 flex-1 flex flex-col border border-[#2C2C2E] min-h-[400px]">
+          {/* RIGHT SIDE DETAILS (Stacked on mobile) */}
+          <div className="lg:col-span-4 flex flex-col gap-4 mt-6 lg:mt-[88px]">
+             <div className="bg-[#1C1C1E] rounded-3xl p-6 flex-1 flex flex-col border border-[#2C2C2E] min-h-[300px] md:min-h-[400px]">
                 <div className="flex justify-between items-center mb-6">
                    <div>
-                     <h2 className="text-3xl font-bold">{date.getDate()} {date.toLocaleString('default', { month: 'short' })}</h2>
+                     <h2 className="text-2xl md:text-3xl font-bold">{date.getDate()} {date.toLocaleString('default', { month: 'short' })}</h2>
                      <p className="text-gray-500 font-bold text-sm">Due Today: {CURRENCIES[currency].symbol}{selectedDateSubs.reduce((a,c)=>a+parseFloat(convertPrice(c.price)),0).toFixed(2)}</p>
                    </div>
                    <button onClick={() => { setEditingId(null); setFormName(''); setFormPrice(''); setFormStatus('Active'); setShowModal(true); }} className="bg-white text-black p-3 rounded-full hover:scale-110 transition-transform"><Plus /></button>
                 </div>
 
-                <div className="space-y-3 overflow-y-auto custom-scrollbar pr-2 flex-1">
+                <div className="space-y-3 overflow-y-auto custom-scrollbar pr-2 flex-1 max-h-[300px] lg:max-h-none">
                    {selectedDateSubs.length > 0 ? selectedDateSubs.map(sub => (
                      <div key={sub.id} className="bg-[#000] p-4 rounded-2xl flex items-center justify-between border border-[#2C2C2E] group">
                         <div className="flex items-center gap-3">
@@ -571,14 +566,14 @@ function App() {
                         </div>
                         <div className="text-right flex flex-col items-end">
                            <p className="font-bold text-lg">{CURRENCIES[currency].symbol}{convertPrice(sub.price)}</p>
-                           <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                           <div className="flex gap-2 lg:opacity-0 group-hover:opacity-100 transition-opacity">
                               <button onClick={() => handleEdit(sub)} className="text-blue-400"><Edit2 size={14}/></button>
                               <button onClick={() => handleDelete(sub.id)} className="text-red-500"><Trash2 size={14}/></button>
                            </div>
                         </div>
                      </div>
                    )) : (
-                     <div className="h-full flex items-center justify-center text-gray-600 font-bold flex-col gap-2">
+                     <div className="h-full flex items-center justify-center text-gray-600 font-bold flex-col gap-2 min-h-[200px]">
                         <Bell size={30} className="opacity-20"/>
                         No payments due
                      </div>
@@ -590,21 +585,21 @@ function App() {
         )}
       </div>
 
-      {/* MODAL */}
+      {/* MODAL (Responsive) */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-xl flex items-center justify-center z-50 p-6">
-          <div className="bg-[#1C1C1E] w-full max-w-md p-8 rounded-[40px] border border-[#333] shadow-2xl relative">
-            <div className="flex justify-between items-center mb-8">
-               <h2 className="text-2xl font-bold text-white">{editingId ? 'Edit Subscription' : 'New Subscription'}</h2>
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-xl flex items-center justify-center z-50 p-4 md:p-6">
+          <div className="bg-[#1C1C1E] w-full max-w-md p-6 md:p-8 rounded-[32px] md:rounded-[40px] border border-[#333] shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <div className="flex justify-between items-center mb-6 md:mb-8 sticky top-0 bg-[#1C1C1E] z-10 pb-2">
+               <h2 className="text-xl md:text-2xl font-bold text-white">{editingId ? 'Edit Subscription' : 'New Subscription'}</h2>
                <button onClick={closeModal} className="bg-[#2C2C2E] p-2 rounded-full text-gray-400 hover:text-white"><X size={20}/></button>
             </div>
             
-            <form onSubmit={handleAddOrUpdate} className="space-y-6">
+            <form onSubmit={handleAddOrUpdate} className="space-y-5 md:space-y-6">
               {/* AUTOCOMPLETE INPUT */}
               <div className="relative group z-50">
                 <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-4 mb-2 block">Service Name</label>
                 <div className="relative">
-                  <input value={formName} onChange={handleNameChange} placeholder="Search (e.g. Netflix)..." className="w-full bg-[#000] border border-[#333] rounded-2xl p-5 text-lg font-bold focus:border-[#0A84FF] outline-none pl-12" autoFocus required />
+                  <input value={formName} onChange={handleNameChange} placeholder="Search (e.g. Netflix)..." className="w-full bg-[#000] border border-[#333] rounded-2xl p-4 md:p-5 text-lg font-bold focus:border-[#0A84FF] outline-none pl-12" autoFocus required />
                   <Search className="absolute left-4 top-5 text-gray-600" size={20} />
                 </div>
                 {suggestions.length > 0 && (
@@ -622,11 +617,11 @@ function App() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-4 mb-2 block">Price (USD)</label>
-                  <input name="price" value={formPrice} onChange={(e) => setFormPrice(e.target.value)} type="number" step="0.01" className="w-full bg-[#000] border border-[#333] rounded-2xl p-5 text-lg font-bold focus:border-[#0A84FF] outline-none" required />
+                  <input name="price" value={formPrice} onChange={(e) => setFormPrice(e.target.value)} type="number" step="0.01" className="w-full bg-[#000] border border-[#333] rounded-2xl p-4 md:p-5 text-lg font-bold focus:border-[#0A84FF] outline-none" required />
                 </div>
                 <div>
                   <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-4 mb-2 block">Day Due</label>
-                  <input name="day" type="number" min="1" max="31" defaultValue={editingId ? undefined : date.getDate()} className="w-full bg-[#000] border border-[#333] rounded-2xl p-5 text-lg font-bold focus:border-[#0A84FF] outline-none" required />
+                  <input name="day" type="number" min="1" max="31" defaultValue={editingId ? undefined : date.getDate()} className="w-full bg-[#000] border border-[#333] rounded-2xl p-4 md:p-5 text-lg font-bold focus:border-[#0A84FF] outline-none" required />
                 </div>
               </div>
 
@@ -658,7 +653,7 @@ function App() {
                  </div>
               </div>
 
-              <button className="w-full bg-white text-black py-5 rounded-2xl font-bold text-lg mt-4 hover:bg-gray-200 transition-colors">{editingId ? 'Update Subscription' : 'Add Subscription'}</button>
+              <button className="w-full bg-white text-black py-4 md:py-5 rounded-2xl font-bold text-lg mt-4 hover:bg-gray-200 transition-colors">{editingId ? 'Update Subscription' : 'Add Subscription'}</button>
             </form>
           </div>
         </div>

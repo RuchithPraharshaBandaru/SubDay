@@ -11,7 +11,7 @@ body {
   overflow-x: hidden;
 }
 
-/* --- THE "NO GAP" FLUID CALENDAR (5-Column) --- */
+/* --- THE "NO GAP" FLUID CALENDAR --- */
 
 .react-calendar {
   width: 100% !important;
@@ -26,14 +26,25 @@ body {
   margin-bottom: 20px !important;
   height: 50px;
 }
+
 .react-calendar__navigation__label {
-  font-size: 2rem !important; 
+  /* Fix: Prevent wrapping and scale down font */
+  white-space: nowrap !important;       /* <--- Prevents the overlap */
+  font-size: 1.5rem !important;         /* <--- Smaller default for mobile */
   font-weight: 800 !important;
   color: white !important;
   flex-grow: 0 !important; 
   margin-right: auto !important; 
   pointer-events: none;
 }
+
+/* Make it big again on Desktop */
+@media (min-width: 768px) {
+  .react-calendar__navigation__label {
+    font-size: 2rem !important;
+  }
+}
+
 .react-calendar__navigation button {
   min-width: 44px;
   background: #1C1C1E !important;
@@ -47,19 +58,40 @@ body {
   background: #333 !important;
 }
 
-/* 2. HIDE WEEKDAYS 
-   Since we are using a continuous grid (Day 1 at start), 
-   "Monday/Tuesday" labels don't make sense visually. */
+/* Optional: Hide the double arrows (« ») on mobile to save space */
+@media (max-width: 640px) {
+  .react-calendar__navigation__prev2-button,
+  .react-calendar__navigation__next2-button {
+    display: none !important;
+  }
+}
+/* 2. Hide Weekdays */
 .react-calendar__month-view__weekdays {
   display: none !important; 
 }
 
-/* 3. FLUID 5-COLUMN GRID 
-   This forces the days into a strict 5x6 layout */
+/* 3. FLUID GRID (RESPONSIVE) */
 .react-calendar__month-view__days {
   display: grid !important;
-  grid-template-columns: repeat(5, 1fr) !important; 
-  gap: 12px; /* Space between cards */
+  gap: 8px; /* Smaller gap on mobile */
+  /* Mobile First: 2 Columns */
+  grid-template-columns: repeat(2, 1fr) !important; 
+}
+
+/* Tablet: 3 Columns */
+@media (min-width: 640px) {
+  .react-calendar__month-view__days {
+    grid-template-columns: repeat(3, 1fr) !important; 
+    gap: 10px;
+  }
+}
+
+/* Desktop: 5 Columns */
+@media (min-width: 1024px) {
+  .react-calendar__month-view__days {
+    grid-template-columns: repeat(5, 1fr) !important; 
+    gap: 12px;
+  }
 }
 
 /* 4. The Day Cards */
@@ -67,20 +99,28 @@ body {
   position: relative !important;
   max-width: none !important;
   flex: none !important;
-  height: 100px !important; 
+  height: 90px !important; /* Slightly shorter on mobile */
   
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: flex-start;
-  padding: 12px !important;
+  padding: 10px !important;
   
   background: #1C1C1E !important; 
-  border-radius: 20px !important;
+  border-radius: 16px !important;
   border: 1px solid transparent;
   color: #8E8E93;
   overflow: hidden !important;
   transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+@media (min-width: 768px) {
+  .react-calendar__tile {
+    height: 100px !important;
+    padding: 12px !important;
+    border-radius: 20px !important;
+  }
 }
 
 /* 5. Hover State */
@@ -89,7 +129,7 @@ body {
   transform: translateY(-2px);
 }
 
-/* 6. Active State (White Box) */
+/* 6. Active State */
 .react-calendar__tile--active {
   background: #FFFFFF !important;
   color: black !important;
@@ -109,8 +149,7 @@ body {
   color: #0A84FF !important;
 }
 
-/* 8. HIDE GHOST DAYS 
-   This ensures the 1st of the month is always the top-left card. */
+/* 8. Hide Neighboring Month Days */
 .react-calendar__month-view__days__day--neighboringMonth {
   display: none !important;
 }
