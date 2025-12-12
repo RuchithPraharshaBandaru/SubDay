@@ -283,13 +283,11 @@ Contributions are welcome! Please follow these steps:
 - [ ] Multi-language support
 - [ ] PWA capabilities for offline use
 
-## 📄 License
 
-This project is open source and available under the [MIT License](LICENSE).
 
 ## 👨‍💻 Author
 
-Built with ❤️ by [Your Name]
+Built with ❤️ by Ruchith Praharsha
 
 ## 🙏 Acknowledgments
 
