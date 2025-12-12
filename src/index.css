@@ -64,6 +64,7 @@ body {
 
 /* 4. The Day Cards */
 .react-calendar__tile {
+  position: relative !important;
   max-width: none !important;
   flex: none !important;
   height: 100px !important; 

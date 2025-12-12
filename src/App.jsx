@@ -10,7 +10,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // --- CONFIG ---
 // ⚠️ REPLACE THIS WITH YOUR ACTUAL GEMINI API KEY
-const GEMINI_API_KEY = "PASTE_YOUR_AIZA_KEY_HERE"; 
+const GEMINI_API_KEY = "AIzaSyD1a5q-cQn2j_fOVAE39axbgMd5ycTdgRk"; 
 
 // --- 1. SMART DATA (Fast Local Knowledge) ---
 const BRAND_KNOWLEDGE = {
