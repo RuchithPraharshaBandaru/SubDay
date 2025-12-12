@@ -339,10 +339,14 @@ function App() {
     return (
       <div className="min-h-screen bg-black text-white font-sans flex items-center justify-center p-4">
         <div className="w-full max-w-md bg-[#1C1C1E] rounded-[40px] p-8 md:p-10 border border-[#333] text-center shadow-2xl">
-          <div className="w-20 h-20 bg-[#2C2C2E] rounded-3xl flex items-center justify-center mx-auto mb-8 border border-[#444] shadow-lg">
-             <Zap size={40} className="text-yellow-500" fill="currentColor"/>
-          </div>
-          <h1 className="text-3xl md:text-4xl font-extrabold mb-4 tracking-tight">SubDay</h1>
+          <h1 className="text-3xl md:text-4xl font-bold flex items-center justify-center gap-3 mb-6">
+             <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/50 animate-pulse">
+               <span className="text-white font-black text-xl md:text-2xl">S</span>
+             </div>
+             <span className="bg-gradient-to-r from-white to-blue-400 bg-clip-text text-transparent">SubDay</span>
+             <span className="text-transparent bg-gradient-to-r from-gray-400 to-gray-600 bg-clip-text font-light">Pro</span>
+           </h1>
+          
           <button onClick={() => signInWithPopup(auth, googleProvider)} className="w-full bg-white text-black py-4 md:py-5 rounded-2xl font-bold text-lg hover:bg-gray-200 transition-all flex items-center justify-center gap-3">Sign in with Google</button>
         </div>
       </div>
@@ -355,9 +359,12 @@ function App() {
         
         {/* TOP BAR */}
         <div className="flex flex-col md:flex-row justify-between items-center px-2 gap-4">
-           <h1 className="text-2xl font-bold flex items-center gap-2">
-             <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">S</div>
-             SubDay <span className="text-gray-500">Pro</span>
+           <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-3 group cursor-pointer">
+             <div className="w-9 h-9 md:w-10 md:h-10 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30 transition-transform group-hover:scale-110 group-hover:rotate-6">
+               <span className="text-white font-black text-lg md:text-xl">S</span>
+             </div>
+             <span className="bg-gradient-to-r from-white via-blue-200 to-blue-400 bg-clip-text text-transparent tracking-tight">SubDay</span>
+             <span className="text-transparent bg-gradient-to-r from-gray-400 to-gray-600 bg-clip-text font-light tracking-wide">Pro</span>
            </h1>
            <div className="flex items-center gap-2 md:gap-4 w-full md:w-auto justify-end">
               <select 
