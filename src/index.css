@@ -1,0 +1,115 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+
+body {
+  background-color: #000000;
+  color: white;
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+}
+
+/* --- THE "NO GAP" FLUID CALENDAR (5-Column) --- */
+
+.react-calendar {
+  width: 100% !important;
+  background: transparent !important;
+  font-family: 'Inter', sans-serif !important;
+  border: none !important;
+}
+
+/* 1. Month Header: Huge & Left Aligned */
+.react-calendar__navigation {
+  display: flex;
+  margin-bottom: 20px !important;
+  height: 50px;
+}
+.react-calendar__navigation__label {
+  font-size: 2rem !important; 
+  font-weight: 800 !important;
+  color: white !important;
+  flex-grow: 0 !important; 
+  margin-right: auto !important; 
+  pointer-events: none;
+}
+.react-calendar__navigation button {
+  min-width: 44px;
+  background: #1C1C1E !important;
+  color: white !important;
+  border-radius: 50% !important;
+  margin-left: 10px;
+  font-size: 1.2rem;
+  transition: background 0.2s;
+}
+.react-calendar__navigation button:hover {
+  background: #333 !important;
+}
+
+/* 2. HIDE WEEKDAYS 
+   Since we are using a continuous grid (Day 1 at start), 
+   "Monday/Tuesday" labels don't make sense visually. */
+.react-calendar__month-view__weekdays {
+  display: none !important; 
+}
+
+/* 3. FLUID 5-COLUMN GRID 
+   This forces the days into a strict 5x6 layout */
+.react-calendar__month-view__days {
+  display: grid !important;
+  grid-template-columns: repeat(5, 1fr) !important; 
+  gap: 12px; /* Space between cards */
+}
+
+/* 4. The Day Cards */
+.react-calendar__tile {
+  max-width: none !important;
+  flex: none !important;
+  height: 100px !important; 
+  
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 12px !important;
+  
+  background: #1C1C1E !important; 
+  border-radius: 20px !important;
+  border: 1px solid transparent;
+  color: #8E8E93;
+  overflow: hidden !important;
+  transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* 5. Hover State */
+.react-calendar__tile:enabled:hover {
+  background: #2C2C2E !important;
+  transform: translateY(-2px);
+}
+
+/* 6. Active State (White Box) */
+.react-calendar__tile--active {
+  background: #FFFFFF !important;
+  color: black !important;
+  box-shadow: 0 10px 20px rgba(255, 255, 255, 0.15);
+  z-index: 10;
+  transform: scale(1.02);
+}
+.react-calendar__tile--active:enabled:hover,
+.react-calendar__tile--active:enabled:focus {
+  background: #FFFFFF !important;
+}
+
+/* 7. Today's Date */
+.react-calendar__tile--now {
+  border: 2px solid #0A84FF !important;
+  background: #1C1C1E !important;
+  color: #0A84FF !important;
+}
+
+/* 8. HIDE GHOST DAYS 
+   This ensures the 1st of the month is always the top-left card. */
+.react-calendar__month-view__days__day--neighboringMonth {
+  display: none !important;
+}
