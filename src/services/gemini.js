@@ -21,7 +21,7 @@ export const generateAIResponse = async (userMessage, subscriptions, currency) =
     const prompt = `Act as a financial assistant. User Currency: ${currency}. Total Monthly (USD base): $${totalCost}. Active Subs: ${subsContext}. Question: "${userMessage}". Keep it short.`;
 
     const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
     const result = await model.generateContent(prompt);
     const text = await result.response.text();
 
