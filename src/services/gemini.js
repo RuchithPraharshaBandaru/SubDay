@@ -1,6 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const GEMINI_API_KEY = "AIzaSyD1a5q-cQn2j_fOVAE39axbgMd5ycTdgRk";
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
 export const generateAIResponse = async (userMessage, subscriptions, currency) => {
   try {
