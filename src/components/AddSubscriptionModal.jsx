@@ -72,18 +72,18 @@ const AddSubscriptionModal = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-xl flex items-center justify-center z-50 p-4 md:p-6">
-      <div className="bg-[#1C1C1E] w-full max-w-md p-6 md:p-8 rounded-[32px] md:rounded-[40px] border border-[#333] shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar">
-        <div className="flex justify-between items-center mb-6 md:mb-8 sticky top-0 bg-[#1C1C1E] z-10 pb-2">
-          <h2 className="text-xl md:text-2xl font-bold text-white">
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-xl flex items-center justify-center z-50 p-3 sm:p-4 md:p-6">
+      <div className="bg-[#1C1C1E] w-full max-w-md p-5 sm:p-6 md:p-8 rounded-3xl md:rounded-[40px] border border-[#333] shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar">
+        <div className="flex justify-between items-center mb-5 md:mb-8 sticky top-0 bg-[#1C1C1E] z-10 pb-2">
+          <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-white">
             {editingSubscription ? 'Edit Subscription' : 'New Subscription'}
           </h2>
-          <button onClick={onClose} className="bg-[#2C2C2E] p-2 rounded-full text-gray-400 hover:text-white">
+          <button onClick={onClose} className="bg-[#2C2C2E] p-2 rounded-full text-gray-400 hover:text-white min-w-[44px] min-h-[44px] flex items-center justify-center">
             <X size={20}/>
           </button>
         </div>
         
-        <form onSubmit={handleSubmit} className="space-y-5 md:space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
           {/* Service Name with Autocomplete */}
           <div className="relative group z-50">
             <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-4 mb-2 block">
@@ -94,7 +94,7 @@ const AddSubscriptionModal = ({
                 value={formData.name} 
                 onChange={(e) => handleNameChange(e.target.value)} 
                 placeholder="Search (e.g. Netflix)..." 
-                className="w-full bg-[#000] border border-[#333] rounded-2xl p-4 md:p-5 text-lg font-bold focus:border-[#0A84FF] outline-none pl-12" 
+                className="w-full bg-[#000] border border-[#333] rounded-2xl p-4 md:p-5 text-base md:text-lg font-bold focus:border-[#0A84FF] outline-none pl-12" 
                 autoFocus 
                 required 
               />
@@ -123,7 +123,7 @@ const AddSubscriptionModal = ({
           </div>
 
           {/* Price & Day */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-3 md:gap-4">
             <div>
               <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-4 mb-2 block">
                 Price (USD)
@@ -133,7 +133,7 @@ const AddSubscriptionModal = ({
                 onChange={(e) => setFormData({ ...formData, price: e.target.value })} 
                 type="number" 
                 step="0.01" 
-                className="w-full bg-[#000] border border-[#333] rounded-2xl p-4 md:p-5 text-lg font-bold focus:border-[#0A84FF] outline-none" 
+                className="w-full bg-[#000] border border-[#333] rounded-2xl p-3 md:p-4 lg:p-5 text-base md:text-lg font-bold focus:border-[#0A84FF] outline-none" 
                 required 
               />
             </div>
@@ -147,14 +147,14 @@ const AddSubscriptionModal = ({
                 type="number" 
                 min="1" 
                 max="31" 
-                className="w-full bg-[#000] border border-[#333] rounded-2xl p-4 md:p-5 text-lg font-bold focus:border-[#0A84FF] outline-none" 
+                className="w-full bg-[#000] border border-[#333] rounded-2xl p-3 md:p-4 lg:p-5 text-base md:text-lg font-bold focus:border-[#0A84FF] outline-none" 
                 required 
               />
             </div>
           </div>
 
           {/* Frequency & Status */}
-          <div className="flex gap-4">
+          <div className="flex gap-3 md:gap-4">
             <div className="flex-1">
               <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-4 mb-2 block">
                 Frequency
@@ -165,7 +165,7 @@ const AddSubscriptionModal = ({
                     key={freq} 
                     type="button" 
                     onClick={() => setFormData({ ...formData, frequency: freq })} 
-                    className={`flex-1 py-3 rounded-xl text-[10px] font-bold transition-all ${
+                    className={`flex-1 py-2 md:py-3 rounded-xl text-[10px] md:text-xs font-bold transition-all min-h-[44px] ${
                       formData.frequency === freq ? 'bg-[#3A3A3C] text-white' : 'text-gray-500'
                     }`}
                   >
@@ -184,7 +184,7 @@ const AddSubscriptionModal = ({
                     key={status} 
                     type="button" 
                     onClick={() => setFormData({ ...formData, status })} 
-                    className={`flex-1 py-3 rounded-xl text-[10px] font-bold transition-all ${
+                    className={`flex-1 py-2 md:py-3 rounded-xl text-[10px] md:text-xs font-bold transition-all min-h-[44px] ${
                       formData.status === status 
                         ? (status === 'Active' ? 'bg-green-900/50 text-white' : 'bg-red-900/50 text-white') 
                         : 'text-gray-500'
@@ -208,7 +208,7 @@ const AddSubscriptionModal = ({
                   key={cat} 
                   type="button" 
                   onClick={() => setFormData({ ...formData, category: cat })} 
-                  className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap border ${
+                  className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap border min-h-[44px] ${
                     formData.category === cat 
                       ? 'bg-white text-black border-white' 
                       : 'bg-[#000] text-gray-500 border-[#333]'
@@ -220,7 +220,7 @@ const AddSubscriptionModal = ({
             </div>
           </div>
 
-          <button className="w-full bg-white text-black py-4 md:py-5 rounded-2xl font-bold text-lg mt-4 hover:bg-gray-200 transition-colors">
+          <button className="w-full bg-white text-black py-4 md:py-5 rounded-2xl font-bold text-base md:text-lg mt-4 hover:bg-gray-200 transition-colors min-h-[50px]">
             {editingSubscription ? 'Update Subscription' : 'Add Subscription'}
           </button>
         </form>

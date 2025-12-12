@@ -38,20 +38,20 @@ const StatsCharts = ({ subscriptions, currency }) => {
   }, [subscriptions, currency]);
 
   return (
-    <div className="grid md:grid-cols-2 gap-6 h-full">
-      <div className="bg-[#1C1C1E] rounded-[32px] p-6 border border-[#2C2C2E] flex flex-col">
-        <h3 className="text-gray-400 font-bold uppercase text-xs tracking-wider mb-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 h-full">
+      <div className="bg-[#1C1C1E] rounded-[24px] md:rounded-[32px] p-4 md:p-6 border border-[#2C2C2E] flex flex-col">
+        <h3 className="text-gray-400 font-bold uppercase text-xs tracking-wider mb-3 md:mb-4">
           Category Split
         </h3>
-        <div className="h-[300px] w-full">
+        <div className="h-[250px] md:h-[300px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie 
                 data={chartData.pie} 
                 dataKey="value" 
                 nameKey="name" 
-                innerRadius={60} 
-                outerRadius={80} 
+                innerRadius={50} 
+                outerRadius={70} 
                 paddingAngle={5} 
                 stroke="none"
               >
@@ -68,22 +68,28 @@ const StatsCharts = ({ subscriptions, currency }) => {
         </div>
       </div>
       
-      <div className="bg-[#1C1C1E] rounded-[32px] p-6 border border-[#2C2C2E] flex flex-col">
-        <h3 className="text-gray-400 font-bold uppercase text-xs tracking-wider mb-4">
+      <div className="bg-[#1C1C1E] rounded-[24px] md:rounded-[32px] p-4 md:p-6 border border-[#2C2C2E] flex flex-col">
+        <h3 className="text-gray-400 font-bold uppercase text-xs tracking-wider mb-3 md:mb-4">
           Cost Forecast
         </h3>
-        <div className="h-[300px] w-full">
+        <div className="h-[250px] md:h-[300px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={chartData.forecast}>
               <CartesianGrid strokeDasharray="3 3" stroke="#2C2C2E" vertical={false} />
-              <XAxis dataKey="month" stroke="#636366" axisLine={false} tickLine={false} />
+              <XAxis 
+                dataKey="month" 
+                stroke="#636366" 
+                axisLine={false} 
+                tickLine={false} 
+                style={{ fontSize: '12px' }}
+              />
               <Tooltip contentStyle={{ backgroundColor: '#000', border: 'none', borderRadius: '8px' }} />
               <Line 
                 type="monotone" 
                 dataKey="amount" 
                 stroke="#0A84FF" 
-                strokeWidth={4} 
-                dot={{r: 4, fill: '#0A84FF'}} 
+                strokeWidth={3} 
+                dot={{r: 3, fill: '#0A84FF'}} 
               />
             </LineChart>
           </ResponsiveContainer>

@@ -36,18 +36,18 @@ const ChatView = ({ subscriptions, currency }) => {
   };
 
   return (
-    <div className="bg-[#1C1C1E] rounded-[32px] p-6 h-[500px] md:h-[600px] flex flex-col border border-[#2C2C2E]">
-      <div className="flex-1 overflow-y-auto custom-scrollbar space-y-4 pr-2 mb-4">
+    <div className="bg-[#1C1C1E] rounded-[24px] md:rounded-[32px] p-4 md:p-6 h-[450px] md:h-[600px] flex flex-col border border-[#2C2C2E]">
+      <div className="flex-1 overflow-y-auto custom-scrollbar space-y-3 md:space-y-4 pr-1 md:pr-2 mb-3 md:mb-4">
         {messages.map((msg, idx) => (
           <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-            <div className={`max-w-[85%] md:max-w-[80%] p-4 rounded-2xl text-sm leading-relaxed ${
+            <div className={`max-w-[90%] md:max-w-[80%] p-3 md:p-4 rounded-2xl text-xs md:text-sm leading-relaxed ${
               msg.role === 'user' 
                 ? 'bg-[#0A84FF] text-white rounded-br-sm' 
                 : 'bg-[#2C2C2E] text-gray-200 rounded-bl-sm'
             }`}>
               {msg.role === 'ai' && (
-                <div className="flex items-center gap-2 mb-2 text-xs font-bold text-gray-400">
-                  <Zap size={12} fill="currentColor" className="text-yellow-500"/> SubDay AI
+                <div className="flex items-center gap-2 mb-2 text-[10px] md:text-xs font-bold text-gray-400">
+                  <Zap size={10} fill="currentColor" className="text-yellow-500 md:w-3 md:h-3"/> SubDay AI
                 </div>
               )}
               {msg.text}
@@ -55,7 +55,7 @@ const ChatView = ({ subscriptions, currency }) => {
           </div>
         ))}
         {isTyping && (
-          <div className="flex items-center gap-2 text-xs text-gray-500 ml-4 animate-pulse">
+          <div className="flex items-center gap-2 text-[10px] md:text-xs text-gray-500 ml-4 animate-pulse">
             Thinking...
           </div>
         )}
@@ -68,14 +68,15 @@ const ChatView = ({ subscriptions, currency }) => {
           onChange={(e) => setChatInput(e.target.value)} 
           onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()} 
           placeholder="Ask AI..." 
-          className="flex-1 bg-black border border-[#333] rounded-2xl px-4 md:px-6 py-4 outline-none focus:border-[#0A84FF] text-white" 
+          className="flex-1 bg-black border border-[#333] rounded-xl md:rounded-2xl px-3 md:px-6 py-3 md:py-4 outline-none focus:border-[#0A84FF] text-white text-sm md:text-base" 
         />
         <button 
           onClick={handleSendMessage} 
           disabled={!chatInput.trim() || isTyping} 
-          className="bg-[#0A84FF] text-white p-4 rounded-2xl hover:bg-blue-600 disabled:opacity-50"
+          className="bg-[#0A84FF] text-white p-3 md:p-4 rounded-xl md:rounded-2xl hover:bg-blue-600 disabled:opacity-50 flex-shrink-0"
         >
-          <Send size={20} />
+          <Send size={16} className="md:hidden" />
+          <Send size={20} className="hidden md:block" />
         </button>
       </div>
     </div>

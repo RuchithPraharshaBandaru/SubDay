@@ -125,8 +125,8 @@ function App() {
 
   // --- MAIN APP ---
   return (
-    <div className="min-h-screen bg-black text-white font-sans p-4 md:p-6 flex justify-center overflow-x-hidden">
-      <div className="w-full max-w-7xl flex flex-col gap-6">
+    <div className="min-h-screen bg-black text-white font-sans p-3 sm:p-4 md:p-6 flex justify-center overflow-x-hidden">
+      <div className="w-full max-w-7xl flex flex-col gap-4 md:gap-6">
         {/* HEADER */}
         <Header
           currency={currency}
@@ -140,11 +140,11 @@ function App() {
             <Loader2 className="animate-spin text-gray-600" size={40} />
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 flex-1">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6 lg:gap-8 flex-1">
             {/* LEFT PANEL */}
             <div className="lg:col-span-8 flex flex-col">
               {/* TABS */}
-              <div className="flex flex-col md:flex-row md:items-center gap-4 mb-6">
+              <div className="flex flex-col md:flex-row md:items-center gap-3 md:gap-4 mb-4 md:mb-6">
                 <div className="bg-[#1C1C1E] p-1 rounded-2xl flex overflow-x-auto no-scrollbar w-full md:w-auto">
                   {[
                     { id: 'calendar', icon: CalIcon },
