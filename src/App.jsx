@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Loader2, BarChart3, Calendar as CalIcon, List, MessageSquare } from 'lucide-react';
+import { Loader2, BarChart3, Calendar as CalIcon, List, MessageSquare, Wand2 } from 'lucide-react';
 import { useAuth } from './hooks/useAuth';
 import { useSubscriptions } from './hooks/useSubscriptions';
 import { useCurrency } from './hooks/useCurrency';
@@ -13,6 +13,7 @@ import CalendarView from './components/CalendarView';
 import ListView from './components/ListView';
 import StatsCharts from './components/StatsCharts';
 import ChatView from './components/ChatView';
+import AutomationHub from './components/AutomationHub';
 import DayDetailPanel from './components/DayDetailPanel';
 import AddSubscriptionModal from './components/AddSubscriptionModal'; 
 
@@ -150,7 +151,8 @@ function App() {
                     { id: 'calendar', icon: CalIcon },
                     { id: 'list', icon: List },
                     { id: 'stats', icon: BarChart3 },
-                    { id: 'chat', icon: MessageSquare }
+                    { id: 'chat', icon: MessageSquare },
+                    { id: 'automation', icon: Wand2 }
                   ].map(tab => (
                     <button
                       key={tab.id}
@@ -201,6 +203,10 @@ function App() {
 
               {activeTab === 'chat' && (
                 <ChatView subscriptions={subscriptions} currency={currency} />
+              )}
+
+              {activeTab === 'automation' && (
+                <AutomationHub subscriptions={subscriptions} currency={currency} />
               )}
             </div>
 

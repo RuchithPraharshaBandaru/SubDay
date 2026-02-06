@@ -33,6 +33,16 @@ A modern, feature-rich subscription management application built with React, Fir
 - Ask questions about your subscriptions
 - Context-aware responses based on your data
 
+### Smart Subscription Detection (Beta)
+- Receipt and email scanning to extract subscription details
+- Bank statement parsing to auto-detect recurring charges
+- Browser extension hooks for sign-up capture
+
+### Proactive Cancellation Assistant (Beta)
+- Free trial reminder scheduling (2 days before end)
+- One-click cancellation guides and links
+- AI-generated negotiation scripts for lower rates
+
 ### 🌍 **Multi-Currency Support**
 - USD, EUR, GBP, INR, JPY, CAD, AUD
 - Real-time currency conversion
