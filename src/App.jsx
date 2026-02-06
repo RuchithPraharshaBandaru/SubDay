@@ -3,7 +3,7 @@ import { Loader2, BarChart3, Calendar as CalIcon, List, MessageSquare, Wand2 } f
 import { useAuth } from './hooks/useAuth';
 import { useSubscriptions } from './hooks/useSubscriptions';
 import { useCurrency } from './hooks/useCurrency';
-import { calculateMonthlyCostUSD } from './utils/calculations';
+import { calculateMonthlyCostUSD, isDueOnDate } from './utils/calculations';
 import { exportToCSV } from './utils/calculations';
 import { getCurrencySymbol } from './utils/currency';
 import { CURRENCIES } from './utils/constants';
@@ -31,6 +31,12 @@ function App() {
   const [showArchived, setShowArchived] = useState(false);
   const [sortBy, setSortBy] = useState('price');
   const [sortOrder, setSortOrder] = useState('desc');
+  const [chatMessages, setChatMessages] = useState([
+    {
+      role: 'ai',
+      text: "Hi! I'm SubDay AI. I've analyzed your monthly spending. How can I help you save money today?"
+    }
+  ]);
 
   // --- NOTIFICATIONS ---
   useEffect(() => {
@@ -64,16 +70,29 @@ function App() {
 
   const subsByDay = useMemo(() => {
     const lookup = {};
-    subscriptions.filter(s => s.status !== 'Canceled').forEach(sub => {
-      if (!lookup[sub.day]) lookup[sub.day] = [];
-      lookup[sub.day].push(sub);
-    });
-    return lookup;
-  }, [subscriptions]);
+    const month = date.getMonth();
+    const year = date.getFullYear();
+    const lastDay = new Date(year, month + 1, 0).getDate();
 
-  const selectedDateSubs = processedSubscriptions.filter(
-    s => s.day === date.getDate() && s.status !== 'Canceled'
-  );
+    for (let day = 1; day <= lastDay; day += 1) {
+      const dayDate = new Date(year, month, day);
+      const dueSubs = subscriptions.filter(sub => isDueOnDate(sub, dayDate));
+      if (dueSubs.length) lookup[day] = dueSubs;
+    }
+
+    return lookup;
+  }, [subscriptions, date]);
+
+  const selectedDateSubs = processedSubscriptions.filter(sub => isDueOnDate(sub, date));
+  const upcomingSubs = useMemo(() => {
+    const oneDay = 24 * 60 * 60 * 1000;
+    const day1 = new Date(date.getTime() + oneDay);
+    const day2 = new Date(date.getTime() + oneDay * 2);
+
+    return subscriptions
+      .filter(sub => sub.status !== 'Canceled')
+      .filter(sub => isDueOnDate(sub, day1) || isDueOnDate(sub, day2));
+  }, [subscriptions, date]);
 
   const totalMonthlyUSD = useMemo(
     () => subscriptions.reduce((acc, sub) => acc + calculateMonthlyCostUSD(sub), 0),
@@ -90,6 +109,14 @@ function App() {
   const handleEdit = (sub) => {
     setEditingSubscription(sub);
     setShowModal(true);
+  };
+
+  const handleCancel = async (sub) => {
+    try {
+      await handleUpdate(sub.id, { status: 'Canceled' });
+    } catch (error) {
+      console.error("Error canceling subscription:", error);
+    }
   };
 
   const openAddModal = () => {
@@ -179,6 +206,7 @@ function App() {
                 <CalendarView
                   date={date}
                   onDateChange={setDate}
+                  onMonthChange={setDate}
                   subsByDay={subsByDay}
                 />
               )}
@@ -193,6 +221,7 @@ function App() {
                   onToggleArchived={() => setShowArchived(!showArchived)}
                   onSort={handleSort}
                   onEdit={handleEdit}
+                  onCancel={handleCancel}
                   onDelete={handleDelete}
                 />
               )}
@@ -202,7 +231,12 @@ function App() {
               )}
 
               {activeTab === 'chat' && (
-                <ChatView subscriptions={subscriptions} currency={currency} />
+                <ChatView
+                  subscriptions={subscriptions}
+                  currency={currency}
+                  messages={chatMessages}
+                  setMessages={setChatMessages}
+                />
               )}
 
               {activeTab === 'automation' && (
@@ -215,9 +249,11 @@ function App() {
               <DayDetailPanel
                 date={date}
                 subscriptions={selectedDateSubs}
+                upcomingSubscriptions={upcomingSubs}
                 currency={currency}
                 onAddClick={openAddModal}
                 onEdit={handleEdit}
+                onCancel={handleCancel}
                 onDelete={handleDelete}
               />
             </div>
@@ -235,6 +271,7 @@ function App() {
         onSubmit={handleModalSubmit}
         editingSubscription={editingSubscription}
         defaultDay={date.getDate()}
+        defaultDate={date}
       />
     </div>
   );

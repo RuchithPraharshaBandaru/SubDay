@@ -11,16 +11,18 @@ import {
   Upload,
   Wand2
 } from 'lucide-react';
-import { generateAIResponse } from '../services/gemini';
+import { generateAIResponse, parseSubscriptionFile } from '../services/gemini';
+import { PRESET_SUBS } from '../utils/constants';
 
-const AutomationHub = ({ subscriptions, currency }) => {
+// Added onUpdate and onAdd to props for persistence
+const AutomationHub = ({ subscriptions, currency, onUpdate, onAdd }) => {
   const receiptInputRef = useRef(null);
   const statementInputRef = useRef(null);
 
   const [receiptFile, setReceiptFile] = useState('');
   const [statementFile, setStatementFile] = useState('');
   const [copyStatus, setCopyStatus] = useState('');
-  const [reminders, setReminders] = useState({});
+  // Removed local reminders state; we now use the data directly from subscriptions
   const [selectedSubId, setSelectedSubId] = useState('');
   const [negotiationNotes, setNegotiationNotes] = useState('');
   const [negotiationScript, setNegotiationScript] = useState('');
@@ -31,16 +33,52 @@ const AutomationHub = ({ subscriptions, currency }) => {
     [subscriptions]
   );
 
-  const handleFilePick = (event, setFileName) => {
+  // Updated to use AI parsing and add the subscription
+  const handleFilePick = async (event, setFileName) => {
     const file = event.target.files?.[0];
-    if (file) setFileName(file.name);
+    if (file) {
+      setFileName(file.name);
+      
+      // Start AI Processing
+      setIsGenerating(true);
+      try {
+        const extractedData = await parseSubscriptionFile(file);
+        
+        if (extractedData) {
+          // Check if we already have this sub to avoid duplicates
+          const exists = subscriptions.some(
+            s => s.name.toLowerCase() === extractedData.name.toLowerCase()
+          );
+
+          if (!exists && onAdd) {
+            await onAdd({
+              ...extractedData,
+              status: 'Active',
+              category: 'Entertainment', // Default fallback
+              icon: '', 
+              color: '#333'
+            });
+            alert(`Successfully detected and added: ${extractedData.name}`);
+          } else if (exists) {
+            alert(`Subscription ${extractedData.name} already exists.`);
+          }
+        } else {
+          alert('Could not extract subscription details. Please try a clearer image.');
+        }
+      } catch (error) {
+        console.error("Parsing error:", error);
+        alert('Error analyzing file.');
+      } finally {
+        setIsGenerating(false);
+      }
+    }
   };
 
+  // Updated to persist changes to Firebase via onUpdate
   const handleReminderChange = (id, updates) => {
-    setReminders((prev) => ({
-      ...prev,
-      [id]: { ...prev[id], ...updates }
-    }));
+    if (onUpdate) {
+      onUpdate(id, updates);
+    }
   };
 
   const handleCopyAddress = async () => {
@@ -54,10 +92,17 @@ const AutomationHub = ({ subscriptions, currency }) => {
     setTimeout(() => setCopyStatus(''), 1500);
   };
 
+  // Updated to look for direct cancel links first
   const handleOpenCancelGuide = (name) => {
-    const url = `https://www.google.com/search?q=${encodeURIComponent(
-      `${name} cancel subscription`
-    )}`;
+    const preset = PRESET_SUBS.find(
+      p => p.name.toLowerCase() === name.toLowerCase()
+    );
+    
+    // Use preset URL if available, otherwise fallback to Search
+    const url = preset?.cancelUrl 
+      ? preset.cancelUrl 
+      : `https://www.google.com/search?q=${encodeURIComponent(`${name} cancel subscription`)}`;
+      
     window.open(url, '_blank', 'noopener,noreferrer');
   };
 
@@ -105,9 +150,10 @@ const AutomationHub = ({ subscriptions, currency }) => {
               />
               <button
                 onClick={() => receiptInputRef.current?.click()}
-                className="w-full bg-[#0A84FF] text-white text-xs font-bold py-2 rounded-xl"
+                disabled={isGenerating}
+                className="w-full bg-[#0A84FF] text-white text-xs font-bold py-2 rounded-xl disabled:opacity-50"
               >
-                Upload file
+                {isGenerating ? 'Scanning...' : 'Upload file'}
               </button>
               {receiptFile && <p className="text-[11px] text-gray-500 truncate">{receiptFile}</p>}
             </div>
@@ -126,9 +172,10 @@ const AutomationHub = ({ subscriptions, currency }) => {
               />
               <button
                 onClick={() => statementInputRef.current?.click()}
-                className="w-full bg-[#2C2C2E] text-white text-xs font-bold py-2 rounded-xl"
+                disabled={isGenerating}
+                className="w-full bg-[#2C2C2E] text-white text-xs font-bold py-2 rounded-xl disabled:opacity-50"
               >
-                Upload statement
+                {isGenerating ? 'Analyzing...' : 'Upload statement'}
               </button>
               {statementFile && <p className="text-[11px] text-gray-500 truncate">{statementFile}</p>}
             </div>
@@ -176,7 +223,10 @@ const AutomationHub = ({ subscriptions, currency }) => {
                 <p className="text-xs text-gray-500">No active subscriptions yet.</p>
               )}
               {activeSubs.map((sub) => {
-                const reminder = reminders[sub.id] || { enabled: false, endDate: '' };
+                // Use data from the subscription object directly
+                const reminderEnabled = sub.reminderEnabled || false;
+                const reminderDate = sub.reminderDate || '';
+
                 return (
                   <div
                     key={sub.id}
@@ -185,21 +235,21 @@ const AutomationHub = ({ subscriptions, currency }) => {
                     <div className="flex-1 text-sm font-bold">{sub.name}</div>
                     <input
                       type="date"
-                      value={reminder.endDate}
+                      value={reminderDate}
                       onChange={(event) =>
-                        handleReminderChange(sub.id, { endDate: event.target.value })
+                        handleReminderChange(sub.id, { reminderDate: event.target.value })
                       }
                       className="bg-black border border-[#333] text-xs rounded-lg px-2 py-2"
                     />
                     <button
                       onClick={() =>
-                        handleReminderChange(sub.id, { enabled: !reminder.enabled })
+                        handleReminderChange(sub.id, { reminderEnabled: !reminderEnabled })
                       }
                       className={`text-xs font-bold px-3 py-2 rounded-xl min-w-[120px] ${
-                        reminder.enabled ? 'bg-green-600 text-white' : 'bg-[#2C2C2E] text-gray-300'
+                        reminderEnabled ? 'bg-green-600 text-white' : 'bg-[#2C2C2E] text-gray-300'
                       }`}
                     >
-                      {reminder.enabled ? 'Reminder on' : 'Enable reminder'}
+                      {reminderEnabled ? 'Reminder on' : 'Enable reminder'}
                     </button>
                   </div>
                 );
@@ -219,7 +269,7 @@ const AutomationHub = ({ subscriptions, currency }) => {
                 <button
                   key={sub.id}
                   onClick={() => handleOpenCancelGuide(sub.name)}
-                  className="w-full flex items-center justify-between bg-[#2C2C2E] px-3 py-2 rounded-xl text-xs font-bold"
+                  className="w-full flex items-center justify-between bg-[#2C2C2E] px-3 py-2 rounded-xl text-xs font-bold hover:bg-[#3C3C3E] transition-colors"
                 >
                   <span>{sub.name}</span>
                   <ExternalLink size={14} />

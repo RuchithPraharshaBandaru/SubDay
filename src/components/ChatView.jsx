@@ -2,14 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Zap, Send } from 'lucide-react';
 import { generateAIResponse } from '../services/gemini';
 
-const ChatView = ({ subscriptions, currency }) => {
+const ChatView = ({ subscriptions, currency, messages, setMessages }) => {
   const [chatInput, setChatInput] = useState("");
-  const [messages, setMessages] = useState([
-    { 
-      role: 'ai', 
-      text: "Hi! I'm SubDay AI. I've analyzed your monthly spending. How can I help you save money today?" 
-    }
-  ]);
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
 

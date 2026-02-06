@@ -1,5 +1,5 @@
 import React from 'react';
-import { Archive, ArrowUpDown, Edit2, Trash2 } from 'lucide-react';
+import { Archive, ArrowUpDown, Ban, Edit2, Trash2 } from 'lucide-react';
 import { convertPrice, getCurrencySymbol } from '../utils/currency';
 
 const ListView = ({ 
@@ -11,6 +11,7 @@ const ListView = ({
   onToggleArchived, 
   onSort, 
   onEdit, 
+  onCancel,
   onDelete 
 }) => {
   return (
@@ -106,6 +107,11 @@ const ListView = ({
                     <button onClick={() => onEdit(sub)} className="p-2 hover:text-blue-400">
                       <Edit2 size={14}/>
                     </button>
+                    {sub.status !== 'Canceled' && (
+                      <button onClick={() => onCancel(sub)} className="p-2 hover:text-yellow-400">
+                        <Ban size={14}/>
+                      </button>
+                    )}
                     <button onClick={() => onDelete(sub.id)} className="p-2 hover:text-red-500">
                       <Trash2 size={14}/>
                     </button>

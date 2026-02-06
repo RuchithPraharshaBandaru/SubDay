@@ -61,7 +61,9 @@ const StatsCharts = ({ subscriptions, currency }) => {
               </Pie>
               <Tooltip 
                 formatter={(value) => `${getCurrencySymbol(currency)}${value}`} 
-                contentStyle={{ backgroundColor: '#000', border: 'none', borderRadius: '12px' }}
+                contentStyle={{ backgroundColor: '#111', border: '1px solid #2C2C2E', borderRadius: '12px', color: '#fff' }}
+                itemStyle={{ color: '#fff' }}
+                labelStyle={{ color: '#9CA3AF' }}
               />
             </PieChart>
           </ResponsiveContainer>

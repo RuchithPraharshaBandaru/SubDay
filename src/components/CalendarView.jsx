@@ -2,11 +2,14 @@ import React from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 
-const CalendarView = ({ date, onDateChange, subsByDay }) => {
+const CalendarView = ({ date, onDateChange, onMonthChange, subsByDay }) => {
   return (
     <div className="flex-1">
       <Calendar 
         onChange={onDateChange} 
+        onActiveStartDateChange={({ activeStartDate }) => {
+          if (activeStartDate) onMonthChange(activeStartDate);
+        }}
         value={date} 
         tileContent={({ date: tileDate }) => {
           const subs = subsByDay[tileDate.getDate()];

@@ -8,7 +8,8 @@ const AddSubscriptionModal = ({
   onClose, 
   onSubmit, 
   editingSubscription = null,
-  defaultDay 
+  defaultDay,
+  defaultDate
 }) => {
   const [formData, setFormData] = useState({
     name: editingSubscription?.name || '',
@@ -18,7 +19,9 @@ const AddSubscriptionModal = ({
     frequency: editingSubscription?.frequency || 'Monthly',
     status: editingSubscription?.status || 'Active',
     color: editingSubscription?.color || '#0A84FF',
-    logo: editingSubscription?.logo || ''
+    logo: editingSubscription?.logo || '',
+    month: editingSubscription?.month ?? defaultDate?.getMonth(),
+    weekday: editingSubscription?.weekday ?? defaultDate?.getDay()
   });
   
   const [suggestions, setSuggestions] = useState([]);
@@ -63,12 +66,22 @@ const AddSubscriptionModal = ({
       }
     }
 
-    onSubmit({
+    const payload = {
       ...formData,
       price: parseFloat(formData.price).toFixed(2),
       day: parseInt(formData.day),
       logo: finalLogo
-    });
+    };
+
+    if (payload.frequency === 'Weekly') {
+      payload.weekday = defaultDate?.getDay() ?? payload.weekday;
+    }
+
+    if (payload.frequency === 'Yearly') {
+      payload.month = defaultDate?.getMonth() ?? payload.month;
+    }
+
+    onSubmit(payload);
   };
 
   return (

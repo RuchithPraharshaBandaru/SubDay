@@ -1,11 +1,12 @@
 import React from 'react';
-import { Plus, Bell, Edit2, Trash2 } from 'lucide-react';
+import { Ban, Plus, Bell, Edit2, Trash2 } from 'lucide-react';
 import { convertPrice, getCurrencySymbol } from '../utils/currency';
 
 const SubscriptionCard = ({ 
   subscription, 
   currency, 
   onEdit, 
+  onCancel,
   onDelete 
 }) => {
   return (
@@ -41,6 +42,12 @@ const SubscriptionCard = ({
             <Edit2 size={12} className="md:hidden" />
             <Edit2 size={14} className="hidden md:block" />
           </button>
+          {subscription.status !== 'Canceled' && (
+            <button onClick={() => onCancel(subscription)} className="text-yellow-400 p-1">
+              <Ban size={12} className="md:hidden" />
+              <Ban size={14} className="hidden md:block" />
+            </button>
+          )}
           <button onClick={() => onDelete(subscription.id)} className="text-red-500 p-1">
             <Trash2 size={12} className="md:hidden" />
             <Trash2 size={14} className="hidden md:block" />
@@ -54,9 +61,11 @@ const SubscriptionCard = ({
 const DayDetailPanel = ({ 
   date, 
   subscriptions, 
+  upcomingSubscriptions,
   currency, 
   onAddClick, 
   onEdit, 
+  onCancel,
   onDelete 
 }) => {
   const totalDue = subscriptions
@@ -91,6 +100,7 @@ const DayDetailPanel = ({
               subscription={sub}
               currency={currency}
               onEdit={onEdit}
+              onCancel={onCancel}
               onDelete={onDelete}
             />
           ))
@@ -101,6 +111,24 @@ const DayDetailPanel = ({
           </div>
         )}
       </div>
+
+      {upcomingSubscriptions?.length > 0 && (
+        <div className="mt-4 md:mt-6 border-t border-[#2C2C2E] pt-4">
+          <p className="text-xs font-bold uppercase text-gray-500 mb-3">Next 2 days</p>
+          <div className="space-y-2">
+            {upcomingSubscriptions.map(sub => (
+              <SubscriptionCard
+                key={`upcoming-${sub.id}`}
+                subscription={sub}
+                currency={currency}
+                onEdit={onEdit}
+                onCancel={onCancel}
+                onDelete={onDelete}
+              />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

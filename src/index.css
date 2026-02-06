@@ -131,22 +131,29 @@ body {
 
 /* 6. Active State */
 .react-calendar__tile--active {
-  background: #FFFFFF !important;
-  color: black !important;
-  box-shadow: 0 10px 20px rgba(255, 255, 255, 0.15);
+  background: #0A84FF !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 10px 20px rgba(10, 132, 255, 0.3);
   z-index: 10;
   transform: scale(1.02);
 }
 .react-calendar__tile--active:enabled:hover,
 .react-calendar__tile--active:enabled:focus {
-  background: #FFFFFF !important;
+  background: #0A84FF !important;
+  color: #FFFFFF !important;
 }
 
 /* 7. Today's Date */
 .react-calendar__tile--now {
-  border: 2px solid #0A84FF !important;
-  background: #1C1C1E !important;
-  color: #0A84FF !important;
+  border: 2px solid #FFFFFF !important;
+  background: #FFFFFF !important;
+  color: #000000 !important;
+}
+
+.react-calendar__tile--now:enabled:hover,
+.react-calendar__tile--now:enabled:focus {
+  background: #FFFFFF !important;
+  color: #000000 !important;
 }
 
 /* 8. Hide Neighboring Month Days */
